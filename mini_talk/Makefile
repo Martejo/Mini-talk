@@ -1,0 +1,29 @@
+SRCS_SERVER = srcs/serveur.c
+SRCS_CLIENT = srcs/client.c
+
+OBJS_SERVER = $(SRCS_SERVER:.c=.o)
+OBJS_CLIENT = $(SRCS_CLIENT:.c=.o)
+
+NAME_SERVER = serveur
+NAME_CLIENT = client
+
+# ... (autres variables)
+
+all: $(NAME_SERVER) $(NAME_CLIENT)
+
+$(NAME_SERVER): $(OBJS_SERVER)
+	@$(CC) $(CFLAGS) -Iinclude -Ilibft $(OBJS_SERVER) -o $(NAME_SERVER) -Llibft -lft
+
+$(NAME_CLIENT): $(OBJS_CLIENT)
+	@$(CC) $(CFLAGS) -Iinclude -Ilibft $(OBJS_CLIENT) -o $(NAME_CLIENT) -Llibft -lft
+
+%.o: %.c include/minitalk.h
+	@$(CC) $(CFLAGS) -Iinclude -Ilibft -c $< -o $@
+
+clean:
+	@$(RM) $(OBJS_SERVER) $(OBJS_CLIENT)
+
+fclean: clean
+	@$(RM) $(NAME_SERVER) $(NAME_CLIENT)
+
+re: fclean all
