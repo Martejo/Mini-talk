@@ -12,27 +12,20 @@
 
 #include "../include/minitalk.h"
 
-void	send_bits(int pid, char bit)
-{
-	if (bit == 1)
-		kill(pid, SIGUSR1);
-	else
-		kill(pid, SIGUSR2);
-	usleep(100); // Petit délai pour permettre au serveur de traiter le signal
-	
-}
 
 void	find_bit(int pid, char c)
 {
-	int	i;
-	char	bit;
+	int	bit;
 
-	i = 0;
-	while (i < 8)
+	bit = 0;
+	while (bit < 8)
 	{
-		bit = (c >> i) & 1;
-		send_bits(pid, bit);
-		i++;
+		if ((c & (1 << bit)))
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(100);
+		bit++;
 	}
 	
 }
@@ -43,7 +36,7 @@ int	main(int argc, char **argv)
 	int	i;
 	
 
-	if (argc != 3 || !argv[2])
+	if (argc != 3)
 	{
 		ft_putstr_fd("Usage: client <PID Serveur> <Message>\n", 2);
 		exit(EXIT_FAILURE);

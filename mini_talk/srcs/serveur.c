@@ -15,7 +15,7 @@
 
 void	handle_signal(int signal)
 {
-	static	char	c;
+	static	int	c;
 	static	int	bit;
 	
 	if (signal == SIGUSR1)
@@ -44,10 +44,11 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	printf("pid du processus = %d\n", pid);
-	signal(SIGUSR1, handle_signal);
-	signal(SIGUSR2, handle_signal);
+	
 	while (argc == 1)
 	{
+		signal(SIGUSR1, handle_signal);
+		signal(SIGUSR2, handle_signal);
 		pause();
 	}
 	return (0);
