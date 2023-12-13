@@ -77,4 +77,112 @@ Processes can define their own signal handlers to execute specific code in respo
 
 **Default actions**:  
 Without custom handlers, signals have default actions, such as terminate, ignore or suspend.  A bit like the windows task manager.
+
+<h3>Asynchronous behavior</h3>
+
+**Asynchronous nature**:  
+Signals are asynchronous, meaning they can interrupt a process at any time to execute the signal handler's code.
+
+<h3>Limitations and considerations</h3>
+
+**Reliability**:  
+Some signals may be lost if the system is overloaded, and there is generally no signal queue.  
+
+**Safety and robustness**:  
+Programming with signals requires special care to avoid race conditions and other problems associated with asynchronism.
+</details>
+<details>
+  <summary>Functions used for mini-talk</summary>  
+  
+`Signal`:  
+Used to define a signal handler for a specific signal.  
+Usage: `signal(int signum, sighandler_t handler)`.  
+Purpose: Allows the program to specify how a process should react to a particular signal  
+(for example, ignore the signal, intercept it, or execute a specific function).  
+
+`sigemptyset`:  
+Function: Initializes and clears a set of signals.  
+Usage: `sigemptyset(sigset_t *set)`.  
+Purpose: Prepares a signal set for adding specific signals, generally used in sigaction configuration.  
+
+`sigaddset`:  
+Function: Adds a specific signal to a set of signals.  
+Usage: `sigaddset(sigset_t *set, int signum)`.  
+Purpose: Used to construct a set of signals to be blocked, ignored or captured.  
+
+`sigaction`:  
+Function: Examines or modifies the action associated with a specific signal.  
+Usage: `sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)`.  
+Purpose: Provides more precise control over signal behavior than with signal, allowing other signals to be blocked while the handler is running. 
+
+`kill`:  
+Function: Sends a signal to a process or group of processes.  
+Usage: `kill(pid_t pid, int sig)`.  
+Purpose: Used to send any signal to any process, usually to terminate or interrupt a process.  
+
+`getpid`:  
+Function: Returns the identifier of the calling process.  
+Usage: `pid_t getpid(void)`.  
+Purpose: Often used in programs where processes need to know their own PID.  
+
+`pause`:  
+Function: Suspends a process until a signal is received.  
+Usage: `int pause(void)`.  
+Purpose: Used in programs that wait for a signal before continuing.  
+
+`sleep`:  
+Function: suspends execution of calling program for a specified time in seconds.  
+Usage: `unsigned int sleep(unsigned int seconds)`.  
+Purpose: Used to pause program execution. 
+
+`usleep`:  
+Function: Suspends execution of the calling program for a specified time in microseconds.  
+Usage: `int usleep(useconds_t usec)`.  
+Purpose: Provides a high-precision pause method for shorter delays than those allowed by sleep.  
+</details>
+<details>
+  <summary>The difference between signal and sigaction</summary>
+
+The difference between signal and sigaction functions in UNIX environments is essential to understand for effective signal management.  
+Here's a summary of the key differences:  
+
+<h4>signal:</h4>
+
+Simplicity:  
+signal is simpler to use than sigaction. It is often used for basic signal handlers.  
+
+Portability:  
+Although widely suported, the signal function may behave slightly differently on different UNIX systems.  
+
+How it works:  
+When a signal is received, the specified handler is called. However, the signal's default behavior is usually restored after the handler has been invoked.  
+
+Limitations:  
+Does not allow other signals to be blocked during handler execution, which can lead to race situations.
+
+<h4>sigaction:</h4>  
+
+Advanced control:  
+sigaction offers more precise control over signal behavior. It is recommended for more complex needs.  
+
+Consistent behavior:  
+Sigaction's behavior is well defined and consistent across different UNIX systems.  
+
+Advanced options:  
+Allows you to specify signals to be blocked during signal handler execution.  
+Select whether signals should be automatically reset to their default behavior.  
+
+Reliability: More reliable for applications requiring robust signal management, especially to avoid conditions. 
+
+<h4>Comparison and Choice:</h4>  
+Choice of approach:  
+for simple needs, signal may suffice, but for applications requiring more sophisticated signal management, sigaction is preferable.  
+
+<h4>Compatibility and safety:</h4>
+
+sigaction is generally considered a safer and more robust approach, thanks to its predictability and ability to handle complex signal interactions.  
+In summary, while signal is useful for simple, portable scenarios, sigaction is the recommended choice for more robust, accurate and reliable signal management in UNIX applications.  
+
+***For my part, I decided to use sigaction to guarantee lossless and rapid processing of all signals.***
+
 </details>
