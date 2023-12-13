@@ -184,5 +184,62 @@ sigaction is generally considered a safer and more robust approach, thanks to it
 In summary, while signal is useful for simple, portable scenarios, sigaction is the recommended choice for more robust, accurate and reliable signal management in UNIX applications.  
 
 ***For my part, I decided to use sigaction to guarantee lossless and rapid processing of all signals.***
+</details>
+<details>
+  <summary>Sigation structure  </summary> 
+The sigaction structure in UNIX operating systems is a key element in advanced signal management.  
+It is used in conjunction with the sigaction function to control signal behavior.  
 
+<h4>Composition of the sigaction structure</h4>
+
+The sigaction structure is defined to manage signal actions.  
+`struct sigaction exemple;`  
+Its main fields are :  
+
+`sa_handler`:  
+ A pointer to a signal handler function, which is called when a specific signal is received.
+
+`sa_sigaction`:  
+ A pointer to an advanced signal handler function, which receives additional information about the signal.  
+
+`sa_mask`:  
+A set of signals (sigset_t) that will be blocked during execution of the signal handler.  
+This prevents unwanted race conditions and interruptions.  
+
+`sa_flags`:  
+Flags that modify the behavior of the signal handler.  
+For example, SA_RESTART causes certain functions interrupted by this signal to be restarted, and SA_SIGINFO allows sa_sigaction to be used instead of sa_handler to obtain additional information about the signal.  
+https://man7.org/linux/man-pages/man2/sigaction.2.html  
+
+<h4>Avdantages of using sigaction</h4>    
+Flexibility and control:  
+Enables more flexible and controlled signal management, including the ability to block other signals during signal manipulation.  
+Reliability and Security:  
+Provides a safer, more reliable method of signal handling, especially in multi-threaded environments or for applications requiring precise signal management.  
+
+<h4>Example of use</h4>
+
+```c
+int	main(void)
+{
+	pid_t				pid;
+	struct sigaction	action;
+	sigset_t			signals;
+
+	pid = getpid();
+	sigemptyset(&signals);
+	sigaddset(&signals, SIGUSR1);
+	sigaddset(&signals, SIGUSR2);
+	action.sa_flags = SA_SIGINFO;
+	action.sa_mask = signals;
+	action.sa_handler = NULL;
+	action.sa_sigaction = handler_signal;
+	sigaction(SIGUSR1, &action, NULL);
+	sigaction(SIGUSR2, &action, NULL);
+	ft_printf("PID server -> %d\n", pid);
+	while (1)
+		pause();
+	return (0);
+}
+```
 </details>
